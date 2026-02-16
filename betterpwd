@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell
+
 # a script to substitute the home directory for ~ in a path because I needed it for my .bashrc
 # (the bash working directory worked wrong for some reason, I think)
 

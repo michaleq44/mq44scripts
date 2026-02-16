@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell (you need to rewrite the &> /dev/null to get rid of bash), util-linux
+
 # script to nicely style the return status of the program
 # ignores EXIT_SUCCESS
 # if it's a signal writes SIG[signal id]

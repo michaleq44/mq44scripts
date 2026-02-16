@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, coreutils, wl-clipboard or xclip, GNUPG,=
+
 # simple script to encrypt:
 # - a single line message (interactive prompt with no argument) 
 # - a multiline message (opens editor, ran with -m)
@@ -7,6 +9,8 @@
 # - piped stdin (provide no argument and use a pipe)
 # it first acquires input the selected way, then asks for recipients
 # output: prints to console and copies to clipboard
+
+# if the program sends you to vi, make sure you have the EDITOR variable set in your shell profile
 
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
 	COPY="wl-copy -t text/plain"

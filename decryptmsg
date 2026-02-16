@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, coreutils, xclip or wl-clipboard, GNUPG
+
 # simple script to decrypt a message from the clipboard
 # because I keep forgetting how gpg works
 # - use -m to open editor

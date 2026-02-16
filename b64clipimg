@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# REQUIRES: a shell (you have to rewrite the &> /dev/null for not bash), coreutils, findutils, wl-clipboard,
+# 		GNU awk, xdg-utils (for the xdg-open part, you can substitute it for an image viewer, probably)
+# I did write multiplatform versions of the other scripts but I'm too lazy to do it here
+# just use ... | xclip -sel clip for copy and xclip -sel clip -o for paste
+# and write a nice XDG_SESSION_TYPE check if you want to
+
 # Utility for encrypting and decrypting base64 images from the clipboard
 # for Gajim
 # the `tr ... | awk ..` part is necessary because the app copies messages with the header

@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, libnotify, a notification daemon, psmisc, procps
+
 # some generic, poorly written script to toggle a process on and off, unable to provide arguments to the process
 
 notify() {

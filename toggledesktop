@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, procps, psmisc, pcmanfm-qt, a wallpaper program (hyprpaper by default here, you can change it)
+
 # it's a simple script to toggle the pcmanfm-qt desktop because I'm running Hyprland
 # and I like to look at it sometimes
 # the caveat is that, with the desktop, if you open a window on an empty workspace

@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, coreutils, libnotify, a notification daemon, waybar, psmisc
+
 # a script to switch between the two mpd server I am running
 # it is very setup specific and performs some unnecessary actions
 # (I do those just out of correctness, I guess)
@@ -16,7 +18,7 @@ rm_links() {
 	unlink "$HOME/.mpd/pid"
 	unlink "$HOME/.mpd/state"
 
-	unlink "$HOME/.config/waybar/config.jsonc"
+	unlink "$XDG_CONFIG_HOME/waybar/config.jsonc"
 }
 
 create_links() {
@@ -25,7 +27,7 @@ create_links() {
 	ln -s "$HOME/.mpd/$1playlist" "$HOME/.mpd/playlists"
 	ln -s "$HOME/.mpd/$1state" "$HOME/.mpd/state"
 
-	ln -s "$HOME/.config/waybar/$1config.jsonc" "$HOME/.config/waybar/config.jsonc"
+	ln -s "$XDG_CONFIG_HOME/waybar/$1config.jsonc" "$XDG_CONFIG_HOME/waybar/config.jsonc"
 }
 
 notify() {
@@ -33,17 +35,17 @@ notify() {
 }
 
 if [[ "$1" == "--get" ]]; then
-	if [[ "$(cat "$HOME/.config/mpd/.currentport")" == "6600" ]]; then
-		echo "Using normal MPD on port $(cat "$HOME/.config/mpd/.currentport")"
+	if [[ "$(cat "$XDG_CONFIG_HOME/mpd/.currentport")" == "6600" ]]; then
+		echo "Using normal MPD on port $(cat "$XDG_CONFIG_HOME/config/mpd/.currentport")"
 	else
-		echo "Using album/other MPD on port $(cat "$HOME/.config/mpd/.currentport")"
+		echo "Using album/other MPD on port $(cat "$XDG_CONFIG_HOME/mpd/.currentport")"
 	fi
 	exit
 fi
 
 rm_links
 
-if [[ "$(cat $HOME/.config/mpd/.currentport)" == "6600" ]]; then
+if [[ "$(cat $XDG_CONFIG_HOME/mpd/.currentport)" == "6600" ]]; then
 	myport=6601
 	create_links 'a'
 	output="Switched to albums MPD"

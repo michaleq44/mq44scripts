@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, GRUB
+
 # my old, simple, update-grub script. I don't use GRUB like that anymore so it's been untouched for a long time
 
 if [ "$EUID" -ne 0 ]; then

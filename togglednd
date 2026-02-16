@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# REQUIRES: a shell, mako, libnotify, grep
+
 # just a simple script to toggle Do Not Disturb mode (DND) in mako (the notification daemon)
 # you need to have a mode named dnd configured in your mako config
 
