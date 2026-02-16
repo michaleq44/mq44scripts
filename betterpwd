@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# a script to substitute the home directory for ~ in a path because I needed it for my .bashrc
+# (the bash working directory worked wrong for some reason, I think)
+
+ret="$PWD"
+if [[ "$ret" == "$HOME"* ]]; then
+	ret="~${ret#"$HOME"}"
+fi
+echo "$ret"

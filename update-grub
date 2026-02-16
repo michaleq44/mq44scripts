@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# my old, simple, update-grub script. I don't use GRUB like that anymore so it's been untouched for a long time
+
+if [ "$EUID" -ne 0 ]; then
+	echo "CRITICAL: Please run as root."
+	exit 1
+fi
+grub-install --target=x86_64-efi --boot-directory=/boot --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg

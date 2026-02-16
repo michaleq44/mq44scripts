@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Utility for encrypting and decrypting base64 images from the clipboard
+# for Gajim
+# the `tr ... | awk ..` part is necessary because the app copies messages with the header
+
+if [[ "$1" == "-d" ]]; then
+	DEST="$XDG_RUNTIME_DIR/mq44scripts"
+	mkdir -p "$DEST"
+	wl-paste | tr -d '\n' | awk -F: '{$1=""; $2=""; $3=""; print}' | xargs | base64 -d > "$DEST/b64img"
+	{ xdg-open "$DEST/b64img" & } &> /dev/null
+else
+	wl-paste | base64 | wl-copy
+fi

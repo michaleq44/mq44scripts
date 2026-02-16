@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+# just a simple script to toggle Do Not Disturb mode (DND) in mako (the notification daemon)
+# you need to have a mode named dnd configured in your mako config
+
+if makoctl mode | grep -q dnd; then
+	makoctl mode -s default
+	echo "Toggling DND off"
+	notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "DND off"
+else
+	echo "Toggling DND on"
+	makoctl mode -s default
+	notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "DND on"
+	sleep 2
+	makoctl mode -s dnd
+fi

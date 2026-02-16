@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+# simple script to decrypt a message from the clipboard
+# because I keep forgetting how gpg works
+# - use -m to open editor
+# - provide filename as argument to decrypt
+# - you can pipe into the script
+
+if [[ "$1" == '-m' ]];  then
+	tmpfile=$(mktemp)
+	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
+	"${EDITOR:-vi}" "$tmpfile"
+	PASTE="cat $tmpfile"
+elif ! [[ -t 0 ]]; then
+	PASTE="cat"
+elif [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+	PASTE="wl-paste"
+elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+	PASTE="xclip -sel clip -o"
+else
+	echo "Not running graphically or couldn't detect display server."
+	echo "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
+	sleep 2
+	tmpfile=$(mktemp)
+	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
+	"${EDITOR:-vi}" "$tmpfile"
+	PASTE="cat $tmpfile"
+fi
+
+$PASTE | gpg -d

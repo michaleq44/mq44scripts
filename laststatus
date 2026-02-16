@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+# script to nicely style the return status of the program
+# ignores EXIT_SUCCESS
+# if it's a signal writes SIG[signal id]
+# otherwise outputs just the return status it was provided
+
+if [[ $1 -eq 0 ]]; then
+    echo ""
+    exit
+fi
+if [[ $1 -le 128 ]]; then
+	echo "[$1]"
+	exit
+fi
+if kill -l "$1" &> /dev/null; then
+    echo "[SIG$(kill -l "$1")]"
+    exit
+fi
+echo "[$1]"

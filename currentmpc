@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+# script to run the right mpc command because I have
+# 2 mpd servers and I switch between them constantly
+# (I know there are probably prettier solutions than 2 servers but it works)
+
+mpc --port $(cat $XDG_CONFIG_HOME/mpd/.currentport) "$@"

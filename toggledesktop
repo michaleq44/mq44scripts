@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+# it's a simple script to toggle the pcmanfm-qt desktop because I'm running Hyprland
+# and I like to look at it sometimes
+# the caveat is that, with the desktop, if you open a window on an empty workspace
+# Hyprland doesn't autofocus the window until you move your mouse
+
+if pidof pcmanfm-qt; then
+	killall pcmanfm-qt
+	exec hyprpaper
+else
+	killall hyprpaper
+	exec pcmanfm-qt --desktop
+fi

@@ -1,0 +1,47 @@
+#!/usr/bin/bash
+
+# simple script to encrypt:
+# - a single line message (interactive prompt with no argument) 
+# - a multiline message (opens editor, ran with -m)
+# - a file (provide filename as argument)
+# - piped stdin (provide no argument and use a pipe)
+# it first acquires input the selected way, then asks for recipients
+# output: prints to console and copies to clipboard
+
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+	COPY="wl-copy -t text/plain"
+elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+	COPY="xclip -sel clip"
+else
+	echo "Not running graphically or couldn't detect display server."
+	echo "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
+	COPY=":"
+fi
+
+content=
+if [[ "$1" == '-m' ]]; then
+	tmpfile=$(mktemp)
+	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
+	"${EDITOR:-vi}" "$tmpfile"
+	content="$(cat "$tmpfile")"
+elif test -f "$1"; then
+	echo "Reading from file"
+	content="$(cat -- "$1")"
+elif ! [[ -t 0 ]]; then
+	echo "Reading from pipe"
+	content=$(cat)
+	exec < /dev/tty
+else
+	read -p "Content: " content
+fi
+
+read -p "Recipients: " names
+
+recipientsarg=
+for name in $names; do
+	recipientsarg+=" -r $name "
+done
+
+encrypted="$(echo "$content" | gpg -ea $recipientsarg)"
+echo "$encrypted"
+echo "$encrypted" | $COPY

@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+
+# some generic, poorly written script to toggle a process on and off, unable to provide arguments to the process
+
+notify() {
+	notify-send -h string:x-canonical-private-synchronous:sys-notify -u low "$1"
+}
+
+if pidof "$1"; then
+	killall "$1"
+	if [[ "$2" == "--notify" ]]; then
+		notify "Killing $1"
+	fi
+else
+	runapp "$1"
+	if [[ "$2" == "--notify" ]]; then
+		notify "Started $1"
+	fi
+fi
