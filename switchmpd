@@ -45,7 +45,7 @@ fi
 
 rm_links
 
-if [[ "$(cat $XDG_CONFIG_HOME/mpd/.currentport)" == "6600" ]]; then
+if [[ "$(cat "$XDG_CONFIG_HOME/mpd/.currentport")" == "6600" ]]; then
 	myport=6601
 	create_links 'a'
 	output="Switched to albums MPD"

@@ -33,7 +33,7 @@ elif test -f "$1"; then
 	content="$(cat -- "$1")"
 elif ! [[ -t 0 ]]; then
 	echo "Reading from pipe"
-	content=$(cat)
+	content="$(cat)"
 	exec < /dev/tty
 else
 	read -p "Content: " content

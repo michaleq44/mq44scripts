@@ -2,7 +2,7 @@
 
 # REQUIRES: a shell (you need to rewrite the &> /dev/null to get rid of bash), util-linux
 
-# script to nicely style the return status of the program
+# script to nicely style the return status of a program
 # ignores EXIT_SUCCESS
 # if it's a signal writes SIG[signal id]
 # otherwise outputs just the return status it was provided

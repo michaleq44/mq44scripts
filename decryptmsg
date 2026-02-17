@@ -4,6 +4,7 @@
 
 # simple script to decrypt a message from the clipboard
 # because I keep forgetting how gpg works
+# - uses clipboard by default
 # - use -m to open editor
 # - provide filename as argument to decrypt
 # - you can pipe into the script
