@@ -1,12 +1,25 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-# REQUIRES: a shell, GRUB
+# REQUIRES: a shell, mkinitcpio, a kernel, GRUB, sbctl, coreutils, shim
 
-# my old, simple, update-grub script. I don't use GRUB like that anymore so it's been untouched for a long time
+# very unnecessarily specialized and complex script to
+# update the bootloader on my laptop chain
 
-if [ "$EUID" -ne 0 ]; then
-	echo "CRITICAL: Please run as root."
-	exit 1
-fi
-grub-install --target=x86_64-efi --boot-directory=/boot --efi-directory=/boot/efi --bootloader-id=GRUB
-grub-mkconfig -o /boot/grub/grub.cfg
+sudo mkinitcpio -P
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+sudo grub-mkstandalone -v \
+	--format=x86_64-efi \
+	--output="/boot/efi/EFI/Boot/grubx64.efi" \
+	--modules="fat normal luks2 gcry_rijndael gcry_sha256 gcry_sha512 cryptodisk part_gpt \
+	ext2 gfxterm gfxterm_background png video all_video echo test configfile search linux gzio gfxmenu" \
+	--install-modules="fat normal luks2 gcry_rijndael gcry_sha256 gcry_sha512 cryptodisk part_gpt \
+	ext2 gfxterm gfxterm_background png video all_video echo test configfile search linux gzio gfxmenu" \
+	--themes=startrek-blue \
+	"boot/grub/grub.cfg=/boot/grub/grub-early.cfg"
+sudo cp /usr/share/shim/mmx64.efi /usr/share/shim/shimx64.efi \
+	/boot/efi/EFI/Boot/
+sudo cp /boot/mt86plus.efi \
+	/boot/efi/EFI/Boot/
+sudo sbctl sign -s /boot/efi/EFI/Boot/grubx64.efi
+sudo sbctl sign -s /boot/efi/EFI/Boot/mmx64.efi
+sudo sbctl sign -s /boot/efi/EFI/Boot/shimx64.efi
