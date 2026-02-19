@@ -9,25 +9,44 @@
 # - provide filename as argument to decrypt
 # - you can pipe into the script
 
+echoerr() {
+	echo "$@" 1>&2
+}
+
 if [[ "$1" == '-m' ]];  then
+	echoerr "Reading from editor."
+	sleep 1
 	tmpfile=$(mktemp)
 	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
 	"${EDITOR:-vi}" "$tmpfile"
-	PASTE="cat $tmpfile"
+	PASTE=cat "$tmpfile"
 elif ! [[ -t 0 ]]; then
+	echoerr "Reading from pipe."
 	PASTE="cat"
 elif [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
 	PASTE="wl-paste"
 elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
 	PASTE="xclip -sel clip -o"
+elif test -f "$1"; then
+	echoerr "Reading from file."
+	PASTE=cat "$1"
 else
-	echo "Not running graphically or couldn't detect display server."
-	echo "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
+	echoerr "Not running graphically or couldn't detect display server."
+	echoerr "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
+	echoerr "Defaulting to editor."
 	sleep 2
 	tmpfile=$(mktemp)
 	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
 	"${EDITOR:-vi}" "$tmpfile"
-	PASTE="cat $tmpfile"
+	PASTE=cat "$tmpfile"
 fi
 
-$PASTE | gpg -d
+if [[ "$1" == "-o" ]] || [[ "$2" == "-o" ]]; then
+	tmpfile2=$(mktemp)
+	trap "rm -f '$tmpfile2'" EXIT INT TERM HUP
+	$PASTE | gpg -qd > $tmpfile2
+	xdg-open "$tmpfile2" &> /dev/null
+	wait
+else
+	$PASTE | gpg -d
+fi

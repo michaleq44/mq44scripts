@@ -1,39 +1,57 @@
 #!/usr/bin/bash
 
-# REQUIRES: a shell, coreutils, wl-clipboard or xclip, GNUPG,=
+# REQUIRES: a shell, coreutils, wl-clipboard or xclip, GNUPG, a text editor
 
 # simple script to encrypt:
 # - a single line message (interactive prompt with no argument) 
 # - a multiline message (opens editor, ran with -m)
 # - a file (provide filename as argument)
 # - piped stdin (provide no argument and use a pipe)
+# - clipboard contents (ran with -p)
 # it first acquires input the selected way, then asks for recipients
 # output: prints to console and copies to clipboard
 
 # if the program sends you to vi, make sure you have the EDITOR variable set in your shell profile
 
+echoerr() {
+	echo "$@" 1>&2
+}
+
 if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
 	COPY="wl-copy -t text/plain"
+	PASTE="wl-paste"
 elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
 	COPY="xclip -sel clip"
+	PASTE="xclip -o"
 else
-	echo "Not running graphically or couldn't detect display server."
-	echo "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
+	echoerr "Not running graphically or couldn't detect display server."
+	echoerr "If the latter, please set XDG_SESSION_TYPE to either wayland or x11 in your graphical init script."
 	COPY=":"
+	if [[ "$1" == '-p' ]]; then exit 1; fi
 fi
 
 content=
+runcontent=0
 if [[ "$1" == '-m' ]]; then
 	tmpfile=$(mktemp)
 	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
 	"${EDITOR:-vi}" "$tmpfile"
-	content="$(cat "$tmpfile")"
+	runcontent=1
+	contentcmd="cat $tmpfile"
+elif [[ "$1" == '-p' ]]; then
+	echoerr "Reading from clipboard."
+	runcontent=1
+	contentcmd="$PASTE"
 elif test -f "$1"; then
-	echo "Reading from file"
+	echoerr "Reading from file."
 	content="$(cat -- "$1")"
 elif ! [[ -t 0 ]]; then
-	echo "Reading from pipe"
-	content="$(cat)"
+	echoerr "Reading from pipe."
+	runcontent=1
+	tmpfile=$(mktemp)
+	trap "rm -f '$tmpfile'" EXIT INT TERM HUP
+	cat > "$tmpfile"
+	contentcmd=cat \"$tmpfile\"
 	exec < /dev/tty
 else
 	read -p "Content: " content
@@ -46,6 +64,10 @@ for name in $names; do
 	recipientsarg+=" -r $name "
 done
 
-encrypted="$(echo "$content" | gpg -ea $recipientsarg)"
+if [[ $runcontent -eq 1 ]]; then
+	encrypted="$($contentcmd | gpg -ea $recipientsarg)"
+else
+	encrypted="$(echo "$content" | gpg -ea $recipientsarg)"
+fi
 echo "$encrypted"
 echo "$encrypted" | $COPY
